@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-12-16 11:15:13 by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="com.cqupt.domain.Orderdetail" table="orderdetail" catalog="bookfood" optimistic-lock="version">
+        <id name="orderdetailid" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="goods" class="com.cqupt.domain.Goods" lazy="false" fetch="select">
+            <column name="goodsid" />
+        </many-to-one>
+        <many-to-one name="order" class="com.cqupt.domain.Order" lazy="false" fetch="select">
+            <column name="orderid" not-null="true" />
+        </many-to-one>
+        <property name="goodsname" type="string">
+            <column name="goodsname" />
+        </property>
+        <property name="goodsphoto" type="string">
+            <column name="goodsphoto" />
+        </property>
+        <property name="state" type="int">
+            <column name="state" />
+        </property>
+        <property name="price" type="double">
+            <column name="price" precision="22" scale="0" />
+        </property>
+        <property name="num" type="int">
+            <column name="num" />
+        </property>
+        <property name="totalprice" type="double">
+            <column name="totalprice" precision="22" scale="0" />
+        </property>
+    </class>
+</hibernate-mapping>

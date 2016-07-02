@@ -1,0 +1,947 @@
+/*
+ *@Project: framework 
+ *@Package: com.cqupt.action 
+ *@File: UserAction.java 
+ *@Date: 2015-12-11 
+ *@author: chenyongzheng
+ *@Copyright: V1.0 www.cqupt.edu.cn Inc. All rights reserved. 
+ *@Description: 本内容仅限于公司内部传阅，禁止外泄以及用于其他的商业目的 
+ */
+package com.cqupt.action;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
+
+import com.cqupt.common.BaseAction;
+import com.cqupt.common.GlobalConst;
+import com.cqupt.common.PageBean;
+import com.cqupt.domain.Address;
+import com.cqupt.domain.Admin;
+import com.cqupt.domain.Areacate;
+import com.cqupt.domain.Goods;
+import com.cqupt.domain.Goodscategory;
+import com.cqupt.domain.Shop;
+import com.cqupt.domain.Shopcategory;
+import com.cqupt.domain.User;
+import com.cqupt.domain.Usercomment;
+import com.cqupt.service.AddressService;
+import com.cqupt.service.AdminService;
+import com.cqupt.service.AreacateService;
+import com.cqupt.service.GoodsService;
+import com.cqupt.service.GoodscategoryService;
+import com.cqupt.service.ShopService;
+import com.cqupt.service.ShopcategoryService;
+import com.cqupt.service.UserService;
+import com.cqupt.service.UsercommentService;
+import com.opensymphony.xwork2.ActionContext;
+
+/**
+ * 
+ * @author Administrator
+ *
+ */
+@Namespace("/admin")
+@Results({ 
+		   /** 用户视图配置 */
+		   @Result(name = "userlist", location = "/pages/admin/user.jsp"),
+		   @Result(name = "userlistredirect", location="getuserlist", type="redirectAction"),
+		   @Result(name = "useradd", location = "/pages/admin/useradd.jsp"),
+		   @Result(name = "userupdate", location = "/pages/admin/userupdate.jsp"),
+		  
+		   /** 商家类别视图配置 */
+		   @Result(name = "shopcategorylist", location = "/pages/admin/shopcategory.jsp"),
+		   @Result(name = "shopcategorylistredirect", location="getshopcategorylist", type="redirectAction"),
+		   @Result(name = "shopcategoryadd", location = "/pages/admin/shopcategoryadd.jsp"),
+		   @Result(name = "shopcategoryupdate", location = "/pages/admin/shopcategoryupdate.jsp"),
+		   
+		   /** 商家视图配置 */
+		   @Result(name = "shoplist", location = "/pages/admin/shop.jsp"),
+		   @Result(name = "shoplistredirect", location="getshoplist", type="redirectAction"),
+		   @Result(name = "shopadd", location = "/pages/admin/shopadd.jsp"),
+		   @Result(name = "shopregister", location = "/pages/shopmanage/shoplogin.jsp"),
+		   @Result(name = "shopupdate", location = "/pages/admin/shopupdate.jsp"),
+		   
+		   /** 商品类别视图配置 */
+		   @Result(name = "goodscategorylist", location = "/pages/admin/goodscategory.jsp"),
+		   @Result(name = "goodscategorylistredirect", location="getgoodscategorylist", type="redirectAction"),
+		   @Result(name = "goodscategoryadd", location = "/pages/admin/goodscategoryadd.jsp"),
+		   @Result(name = "goodscategoryupdate", location = "/pages/admin/goodscategoryupdate.jsp"),
+		   
+		   /** 商品视图配置 */
+		   @Result(name = "goodslist", location = "/pages/admin/goods.jsp"),
+		   @Result(name = "goodslistredirect", location="getgoodslist", type="redirectAction"),
+		   @Result(name = "goodsadd", location = "/pages/admin/goodsadd.jsp"),
+		   @Result(name = "goodsupdate", location = "/pages/admin/goodsupdate.jsp"),
+		   
+		   /** 修改密码*/
+		   @Result(name = "password", location = "/pages/admin/password.jsp"),
+		   
+		   /** 地理类别视图配置*/
+		   @Result(name = "addresslist", location = "/pages/admin/address.jsp"),
+		   @Result(name = "addresslistredirect", location="getaddresslist", type="redirectAction"),
+		   /** 商品类别视图配置 */
+		   @Result(name = "areacatelist", location = "/pages/admin/areacate.jsp"),
+		   @Result(name = "areacatelistredirect", location="getareacatelist", type="redirectAction"),
+		   @Result(name = "areacateadd", location = "/pages/admin/areacateadd.jsp"),
+		   @Result(name = "logout", location = "/pages/admin/adminlogin.jsp"),
+		   /** 评论类别视图配置 */
+		   @Result(name = "commentlist", location = "/pages/admin/commentlist.jsp"),
+		   @Result(name = "commentdelete", location = "getcommentlist",type="redirectAction")
+          })
+public class AdminAction extends BaseAction {
+	
+	private static final long serialVersionUID = 3782426498578732703L;
+
+	Admin admin = new Admin();
+	
+	User user = new User();
+	
+	Address address = new Address();
+	
+	Goodscategory goodscategory = new Goodscategory();
+	
+	Goods goods = new Goods();
+	
+	Shopcategory shopcategory = new Shopcategory();
+	
+	Shop shop = new Shop();
+	
+	Areacate areacate = new Areacate();
+	
+	AdminService adminService;
+	
+	UserService userService;
+	
+	AddressService addressService;
+	
+	ShopcategoryService shopcategoryService;
+	
+	ShopService shopService;
+	
+	GoodscategoryService goodscategoryService;
+	
+	GoodsService goodsService;
+	
+	AreacateService areacateService;
+	
+	static Logger logger = LogManager.getLogger(AdminAction.class.getName());
+	
+	PageBean pageBean = new PageBean();
+	
+	List categorylist;
+	
+	List<Areacate> areacatelist = new ArrayList<Areacate>();
+	
+	List<Areacate> areacateresult = new ArrayList<Areacate>();
+	
+	UsercommentService usercommentService;
+	
+	Usercomment usercomment=new Usercomment();
+	
+	/**
+	 * 文件对象
+	 */
+	private File file;
+ 
+	/**
+	 * 提交过来的file的名字
+	 */
+	private String fileFileName;
+
+	/**
+	 * 提交过来的file的MIME类型
+	 */
+	private String fileContentType;
+	
+
+	/**
+	 * 
+	 * @Description: 用戶分頁顯示
+	 * @param 参数说明
+	 * @return String 返回类型
+	 * @throws 异常说明
+	 */
+	@Action("queryAdminByPage")
+	public String queryAdminByPage() throws Exception {
+       
+       pageBean = adminService.queryAdminByPage(admin, pageBean);
+		return "adminList";
+
+	}
+
+	
+	public Address getAddress() {
+		return address;
+	}
+
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+
+	public AddressService getAddressService() {
+		return addressService;
+	}
+
+
+	public void setAddressService(AddressService addressService) {
+		this.addressService = addressService;
+	}
+
+
+	/**
+	 * @return the admin
+	 */
+	public Admin getAdmin() {
+		return admin;
+	}
+
+	/**
+	 * @param admin
+	 *            the admin to set
+	 */
+	public void setAdmin(Admin admin) {
+		this.admin = admin;
+	}
+
+	/**
+	 * @param adminService
+	 *            the adminService to set
+	 */
+	public void setAdminService(AdminService adminService) {
+		this.adminService = adminService;
+	}
+
+
+	public User getUser() {
+		return user;
+	}
+
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
+
+	public PageBean getPageBean() {
+		return pageBean;
+	}
+
+
+
+	public void setPageBean(PageBean pageBean) {
+		this.pageBean = pageBean;
+	}
+	
+	public Shopcategory getShopcategory() {
+		return shopcategory;
+	}
+
+
+	public void setShopcategory(Shopcategory shopcategory) {
+		this.shopcategory = shopcategory;
+	}
+
+
+	public void setShopcategoryService(ShopcategoryService shopcategoryService) {
+		this.shopcategoryService = shopcategoryService;
+	}
+
+	
+	public Shop getShop() {
+		return shop;
+	}
+
+
+	public void setShop(Shop shop) {
+		this.shop = shop;
+	}
+
+
+	public void setShopService(ShopService shopService) {
+		this.shopService = shopService;
+	}
+	
+
+	public Goods getGoods() {
+		return goods;
+	}
+
+
+	public void setGoods(Goods goods) {
+		this.goods = goods;
+	}
+
+
+	public void setGoodsService(GoodsService goodsService) {
+		this.goodsService = goodsService;
+	}
+
+
+	public List getCategorylist() {
+		return categorylist;
+	}
+
+
+	public void setCategorylist(List categorylist) {
+		this.categorylist = categorylist;
+	}
+
+	public Goodscategory getGoodscategory() {
+		return goodscategory;
+	}
+
+
+	public void setGoodscategory(Goodscategory goodscategory) {
+		this.goodscategory = goodscategory;
+	}
+
+	public void setGoodscategoryService(GoodscategoryService goodscategoryService) {
+		this.goodscategoryService = goodscategoryService;
+	}
+
+	public Areacate getAreacate() {
+		return areacate;
+	}
+
+
+	public void setAreacate(Areacate areacate) {
+		this.areacate = areacate;
+	}
+
+
+	public AreacateService getAreacateService() {
+		return areacateService;
+	}
+
+
+	public void setAreacateService(AreacateService areacateService) {
+		this.areacateService = areacateService;
+	}
+	
+
+	public List<Areacate> getAreacatelist() {
+		return areacatelist;
+	}
+
+
+	public void setAreacatelist(List<Areacate> areacatelist) {
+		this.areacatelist = areacatelist;
+	}
+
+
+	public List<Areacate> getAreacateresult() {
+		return areacateresult;
+	}
+
+
+	public void setAreacateresult(List<Areacate> areacateresult) {
+		this.areacateresult = areacateresult;
+	}
+
+
+	boolean success;
+	
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+	
+	
+
+	public File getFile() {
+		return file;
+	}
+
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+
+	public String getFileFileName() {
+		return fileFileName;
+	}
+
+
+	public void setFileFileName(String fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+
+	public String getFileContentType() {
+		return fileContentType;
+	}
+
+
+	public void setFileContentType(String fileContentType) {
+		this.fileContentType = fileContentType;
+	}
+
+	public void setUsercommentService(UsercommentService usercommentService) {
+		this.usercommentService = usercommentService;
+	}
+	
+	public Usercomment getUsercomment() {
+		return usercomment;
+	}
+
+
+	public void setUsercomment(Usercomment usercomment) {
+		this.usercomment = usercomment;
+	}
+
+
+	@Action("addressdel")
+	public String addressdel(){
+		int id = address.getAddressid();
+		Address a = addressService.getAddress(id);
+		if(a != null){
+			addressService.delAddress(id);
+		}
+		return "addresslistredirect";
+	}
+	
+	@Action("getaddresslist")
+	public String getaddresslist(){
+		pageBean.setPageSize(10);
+		pageBean = addressService.queryAddressByPage(address, pageBean);
+		return "addresslist";
+	}
+	
+	/*
+	 * 用户业务处理
+	 */
+
+	@Action("getuserlist")
+	public String getuserlist(){
+		pageBean.setPageSize(10);
+		pageBean = userService.queryUserByPage(user, pageBean);
+		return "userlist";
+	}
+	
+	@Action("useradd")
+	public String useradd(){
+		//System.out.println("------------------------------add");
+		success = false;
+		User u = new User();
+		u.setUsername(user.getUsername());
+		u.setPassword(user.getPassword());
+		u.setSex(user.getSex());
+		u.setEmail(user.getEmail());
+		u.setTel(user.getTel());
+		u.setCreatetime(new Date());
+		//System.out.println(u.getEmail());
+		User u2 = userService.saveUser(u);
+		if(u2 != null){
+			success = true;
+		}
+		return "useradd";
+	}
+	
+	@Action("userupdate")
+	public String userupdate(){
+		System.out.println("-------------------userupdate");
+		int id = user.getUserid();
+		user = userService.getUser(id);
+		return "userupdate";
+	}
+	
+	@Action("userupdateoperate")
+	public String userupdateoperate(){
+		User u = new User();
+		u = userService.getUser(user.getUserid());
+		u.setUsername(user.getUsername());
+		u.setPassword(user.getPassword());
+		u.setEmail(user.getEmail());
+		u.setSex(user.getSex());
+		u.setState(user.getState());
+		u.setTel(user.getTel());
+		u.setCreatetime(new Date());
+		System.out.println(u.getUsername()+"--------------------");
+		userService.updateUser(u);
+		return "userupdate";
+	}
+	
+	@Action("userdel")
+	public String userdel(){
+		int id = user.getUserid();
+		User u = userService.getUser(id);
+		if(u != null){
+			userService.delUser(id);
+		}
+		return "userlistredirect";
+	}
+	
+	/*
+	 * 商家类别业务处理
+	 */
+
+	@Action("getshopcategorylist")
+	public String getshopcategorylist(){
+		pageBean.setPageSize(10);
+		pageBean = shopcategoryService.queryShopcategoryByPage(shopcategory, pageBean);
+		return "shopcategorylist";
+	}
+	
+	@Action("shopcategoryadd")
+	public String shopcategoryadd(){
+		success = false;
+		Shopcategory s = new Shopcategory();
+		s.setPid(shopcategory.getPid());
+		s.setCategory(shopcategory.getCategory());
+		Shopcategory s2 = shopcategoryService.saveShopcategory(shopcategory);
+		if(s2 != null){
+			success = true;
+		}
+		return "shopcategoryadd";
+	}
+	
+	@Action("shopcategoryupdate")
+	public String shopcategoryupdate(){
+		int id = shopcategory.getShopcategoryid();
+		shopcategory = shopcategoryService.getShopcategory(id);
+		return "shopcategoryupdate";
+	}
+	
+	@Action("shopcategoryupdateoperate")
+	public String shopcategoryupdateoperate(){
+		Shopcategory s = new Shopcategory();
+		s = shopcategoryService.getShopcategory(shopcategory.getShopcategoryid());
+		s.setPid(shopcategory.getPid());
+		s.setCategory(shopcategory.getCategory());
+		shopcategoryService.updateShopcategory(s);
+		return "shopcategoryupdate";
+	}
+	
+	@Action("shopcategorydel")
+	public String shopcategorydel(){
+		int id = shopcategory.getShopcategoryid();
+		Shopcategory s = shopcategoryService.getShopcategory(id);
+		if(s != null){
+			shopcategoryService.delShopcategory(id);
+		}
+		return "shopcategorylistredirect";
+	}
+	
+	/*
+	 * 商家业务处理
+	 */
+	@Action("getshoplist")
+	public String getshoplist(){
+		pageBean.setPageSize(10);
+		pageBean = shopService.queryShopByPage(shop, pageBean);
+		return "shoplist";
+	}
+	
+	@Action("shopadd")
+	public String shopadd(){
+		Shopcategory category = new Shopcategory();
+		categorylist = shopcategoryService.queryShopcategory(category);
+		return "shopadd";
+	}
+	
+	@Action("shopregister")
+	public String shopregister() throws Exception{
+		success = false;
+		Shop s = new Shop();	
+		
+		/**
+		 * 文件保存路径
+		 */
+		String root = ServletActionContext.getServletContext().getRealPath(
+				GlobalConst.UPLOADPATH);
+		// 保存文件名,避免文件名重复
+		fileFileName = UUID.randomUUID() + fileFileName;
+
+		InputStream is = new FileInputStream(file);
+
+		OutputStream os = new FileOutputStream(new File(root, fileFileName));
+
+		byte[] buffer = new byte[500];
+		int length = 0;
+
+		while ((length = is.read(buffer, 0, buffer.length)) != -1) {
+			os.write(buffer, 0, length);
+		}
+
+		os.close();
+		is.close();
+		
+		s.setShopcategory(shop.getShopcategory());
+		s.setShopname(shop.getShopname());
+		s.setPassword(shop.getPassword());
+		s.setShoploginname(shop.getShoploginname());
+		s.setPhoto("http://localhost:8080/wsdc/resources/upload/"+fileFileName);
+		s.setShopaddress(shop.getShopaddress());
+		s.setTel(shop.getTel());
+		s.setIntroduc(shop.getIntroduc());
+		s.setState(0);
+		s.setCreatetime(new Date());
+		
+		Shop s2 = shopService.saveShop(s);
+		if(s2 != null){
+			success = true;
+		}
+		return "shopregister";
+	}
+	
+	@Action("shopaddoperate")
+	public String shopaddoperation(){
+		success = false;
+		Shop s = new Shop();	
+		s.setShopcategory(shop.getShopcategory());
+		s.setShopname(shop.getShopname());
+		s.setPhoto(shop.getPhoto());
+		s.setShopaddress(shop.getShopaddress());
+		s.setRank(shop.getRank());
+		s.setState(0);
+		s.setCreatetime(new Date());
+		
+		Shop s2 = shopService.saveShop(s);
+		if(s2 != null){
+			success = true;
+		}
+		return "shopadd";
+	}
+	
+	@Action("shopupdate")
+	public String shopupdate(){
+		int id = shop.getShopid();
+		shop = shopService.getShop(id);
+		Shopcategory category = new Shopcategory();
+		categorylist = shopcategoryService.queryShopcategory(category);
+		return "shopupdate";
+	}
+	
+	@Action("shopupdateoperate")
+	public String shopupdateoperate(){
+		Shop s = new Shop();
+		s = shopService.getShop(shop.getShopid());
+		s.setShopcategory(shop.getShopcategory());
+		s.setShopname(shop.getShopname());
+		s.setShopaddress(shop.getShopaddress());
+		s.setTel(shop.getTel());
+		s.setRank(shop.getRank());
+		s.setIntroduc(shop.getIntroduc());
+		s.setPhoto(shop.getPhoto());
+		s.setState(shop.getState());
+		s.setCreatetime(new Date());
+		shopService.updateShop(s);
+		return "shopupdate";
+	}
+	
+	@Action("shopchangestate")
+	public String shopchangestate(){
+		int id = shop.getShopid();
+		Shop uc = shopService.getShop(id);
+		
+		if(uc.getState()==1)
+		{
+			uc.setState(0);
+			shopService.updateShop(uc);
+		}
+		else
+		{
+			uc.setState(1);
+			shopService.updateShop(uc);
+		}
+		
+		return "shoplistredirect";
+	}
+	
+	@Action("shopdel")
+	public String shopdel(){
+		int id = shop.getShopid();
+		Shop s = shopService.getShop(id);
+		if(s != null){
+			shopService.delShop(id);
+		}
+		return "shoplistredirect";
+	}
+	
+	/*
+	 * 商品分类业务处理
+	 */
+	@Action("getgoodscategorylist")
+	public String getgoodscategorylist(){
+		pageBean.setPageSize(10);
+		System.out.println(goodscategory.getCategory()+"-------------------");
+		pageBean = goodscategoryService.queryGoodsCategoryByPage(goodscategory, pageBean);
+		return "goodscategorylist";
+	}
+	
+	@Action("goodscategoryadd")
+	public String goodscategoryadd(){
+		success = false;
+		Goodscategory c = new Goodscategory();
+		c.setPid(goodscategory.getPid());
+		c.setCategory(goodscategory.getCategory());
+		Goodscategory c2 = goodscategoryService.saveGoodsCategory(goodscategory);
+		if(c2 != null){
+			success = true;
+		}
+		return "goodscategoryadd";
+	}
+	
+	@Action("goodscategoryupdate")
+	public String goodscategoryupdate(){
+		int id = goodscategory.getGoodscategoryid();
+		goodscategory = goodscategoryService.getGoodscategory(id);
+		return "goodscategoryupdate";
+	}
+	
+	@Action("goodscategoryupdateoperate")
+	public String goodscategoryupdateoperate(){
+		Goodscategory c = new Goodscategory();
+		c = goodscategoryService.getGoodscategory(goodscategory.getGoodscategoryid());
+		c.setPid(goodscategory.getPid());
+		c.setCategory(goodscategory.getCategory());
+		goodscategoryService.updateGoodsCategory(c);
+		return "goodscategoryupdate";
+	}
+	
+	@Action("goodscategorydel")
+	public String goodscategorydel(){
+		int id = goodscategory.getGoodscategoryid();
+		Goodscategory cate = goodscategoryService.getGoodscategory(id);
+		if(cate != null){
+			goodscategoryService.delGoodsCategory(id);
+		}
+		return "goodscategorylistredirect";
+	}
+	
+	
+	/*
+	 * 商品业务处理
+	 */
+	@Action("goodschangestate")
+	public String goodschangestate(){
+		int goodsid = goods.getGoodsid();
+		Goods gs = goodsService.getGoods(goodsid);
+		if(gs.getState()==1)
+		{
+			gs.setState(0);
+			goodsService.updateGoods(gs);
+		}
+		else
+		{
+			gs.setState(1);
+			goodsService.updateGoods(gs);
+		}
+		
+		return "goodslistredirect";
+	}
+	
+	@Action("getgoodslist")
+	public String getgoodslist(){
+		pageBean.setPageSize(10);
+		pageBean = goodsService.queryGoodsByPage(goods, pageBean);
+		return "goodslist";
+	}
+	
+	@Action("goodsadd")
+	public String goodsadd(){
+		Goodscategory category = new Goodscategory();
+		categorylist = goodscategoryService.queryGoodsCategory(category);
+		return "goodsadd";
+	}
+	
+	@Action("goodsaddoperate")
+	public String goodsaddoperation(){
+		success = false;
+		Goods g = new Goods();	
+		g.setShop(goods.getShop());
+		g.setGoodscateogry(goods.getGoodscateogry());
+		g.setGoodsname(goods.getGoodsname());
+		g.setSales(goods.getSales());
+		g.setPrice(goods.getPrice());
+		g.setIntroduc(goods.getIntroduc());
+		g.setState(1);
+		g.setCreatetime(new Date());
+		
+		Goods g2 = goodsService.saveGoods(g);
+		if(g2 != null){
+			success = true;
+		}
+		return "goodsadd";
+	}
+	
+	@Action("goodsupdate")
+	public String goodsupdate(){
+		int id = goods.getGoodsid();
+		goods = goodsService.getGoods(id);
+		Goodscategory category = new Goodscategory();
+		categorylist = goodscategoryService.queryGoodsCategory(category);
+		return "goodsupdate";
+	}
+	
+	@Action("goodsupdateoperate")
+	public String goodsupdateoperate(){
+		Goods g = new Goods();
+		g = goodsService.getGoods(goods.getGoodsid());
+		g.setGoodscateogry(goodscategory);
+		g.setShop(goods.getShop());
+		g.setGoodscateogry(goods.getGoodscateogry());
+		g.setGoodsname(goods.getGoodsname());
+		g.setSales(goods.getSales());
+		g.setPrice(goods.getPrice());
+		g.setIntroduc(goods.getIntroduc());
+		g.setState(goods.getState());
+		g.setCreatetime(new Date());
+		goodsService.updateGoods(g);
+		return "goodsupdate";
+	}
+	
+	@Action("goodsdel")
+	public String goodsdel(){
+		int id = goods.getGoodsid();
+		Goods g = goodsService.getGoods(id);
+		if(g != null){
+			goodsService.delGoods(id);
+		}
+		return "goodslistredirect";
+	}
+	
+	@Action("passwordchange")
+	public String passwordchange(){
+		Admin adm = new Admin();
+		List<Admin> list = adminService.queryAdmin(adm);
+		adm = list.get(0);
+		adm.setPassword(admin.getPassword());
+		adminService.updateAdmin(adm);
+		return "password";
+	}
+	
+	/*
+	 * 区域类别管理
+	 */
+
+	@Action("getareacatelist")
+	public String getareacatelist(){
+		pageBean.setPageSize(10);
+		pageBean = areacateService.queryAreacateByPage(areacate, pageBean);
+		return "areacatelist";
+	}
+	
+	@Action("areacateadd")
+	public String areacateadd(){
+		Areacate a = new Areacate();
+		categorylist = areacateService.queryAreacate(a);
+		//System.out.println(categorylist.size()+"--------------------");
+		areacateresult = genCate(categorylist, 0, 0, "areacate");
+		//System.out.println(areacatelist.size()+"---------------------------");
+		return "areacateadd";
+	}
+	
+	@Action("areacateaddoperate")
+	public String areacateaddoperate(){
+		success = false;
+		Areacate c = new Areacate();
+		c.setPid(areacate.getPid());
+		c.setArea(areacate.getArea());
+		Areacate c2 = areacateService.saveAreacate(areacate);
+		if(c2 != null){
+			success = true;
+		}
+		return "areacateadd";
+	}
+	
+	@Action("areacateupdate")
+	public String areacateupdate(){
+		int id = areacate.getAreacateid();
+		areacate = areacateService.getAreacate(id);
+		categorylist = areacateService.queryAreacate(new Areacate());
+		areacateresult = genCate(categorylist, 0, 0, "areacate");
+		return "areacateupdate";
+	}
+	
+	@Action("areacateupdateoperate")
+	public String areacateupdateoperate(){
+		Areacate c = new Areacate();
+		c = areacateService.getAreacate(areacate.getAreacateid());
+		c.setPid(areacate.getPid());
+		c.setArea(areacate.getArea());
+		areacateService.updateAreacate(c);
+		return "areacateupdate";
+	}
+	
+	@Action("areacatedel")
+	public String areacatedel(){
+		int id = areacate.getAreacateid();
+		Areacate a = areacateService.getAreacate(id);
+		if(a != null){
+			areacateService.delAreacate(id);
+		}
+		return "areacatelistredirect";
+	}
+	
+	@Action("logout")
+	public String logout(){
+		ActionContext.getContext().getSession().remove("admin");
+		return "logout";
+	}
+	/*
+	 * 递归实现区域无限级分类
+	 */
+	public List<Areacate> genCate(List<Areacate> list, int pid, int level,String keyword){
+		if (level == 10)
+			return areacatelist;
+		String l = "";
+		for (int i = 0; i < level; i++) {
+			l += "　";
+		}
+		l = l + "└";
+		for (Areacate catelist : list) {
+			if (catelist.getPid() == pid) {
+				Areacate cate = new Areacate();
+				cate.setPid(catelist.getPid());
+				cate.setAreacateid(catelist.getAreacateid());
+				cate.setArea(l + catelist.getArea());
+				areacatelist.add(cate);
+				genCate(list, catelist.getAreacateid(), level + 1,
+						keyword);
+			}
+
+		}
+		return areacatelist;  
+	}
+	
+	@Action("getcommentlist")
+	public String queryCommentByPage() throws Exception{
+		pageBean.setPageSize(10);
+		pageBean=usercommentService.queryUsercommentByPage(usercomment, pageBean);
+		return "commentlist";
+	}
+	
+	@Action("delcomment")
+	public String delComment() throws Exception{
+		int id=usercomment.getUsercommentid();
+		usercommentService.delUsercomment(id);
+		return "commentdelete";
+	}
+}

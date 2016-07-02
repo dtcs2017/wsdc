@@ -1,0 +1,1 @@
+shop:saletotalnum(总销量), sendprice(销售价格),sendtime(配送时间), runstate（运营状态）

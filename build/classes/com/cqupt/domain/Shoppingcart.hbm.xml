@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-12-16 11:15:13 by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="com.cqupt.domain.Shoppingcart" table="shoppingcart" catalog="bookfood" optimistic-lock="version">
+        <id name="shoppingcartid" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="goods" class="com.cqupt.domain.Goods" lazy="false" fetch="select">
+            <column name="goodsid" />
+        </many-to-one>
+        <many-to-one name="user" class="com.cqupt.domain.User" lazy="false" fetch="select">
+            <column name="userid" not-null="true" />
+        </many-to-one>
+        <property name="goodsnum" type="int">
+            <column name="goodsnum" not-null="true" />
+        </property>
+        <property name="createtime" type="timestamp">
+            <column name="createtime" length="0" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,24 @@
+@CHARSET "UTF-8";
+body{background:#fcfcfc}
+hr{border:0}
+*{margin:0;padding:0;font-family:微软雅黑}
+		table{
+			width:90%;
+			margin-left:5%;
+			border-collapse: collapse;
+			border-spacing: 0;
+			border:0;
+			
+		}
+		.table-main{
+			box-shadow:0 0 5px #474747;
+			border-radius:5px;
+			margin-top:50px
+		}
+		.th{background:#D8F3CF;color:#474747}
+		tr,td{
+			border-bottom:1px solid #ddd;
+			height:40px;
+			text-align:center
+			}
+		tr.even{background:#FFFBF1}

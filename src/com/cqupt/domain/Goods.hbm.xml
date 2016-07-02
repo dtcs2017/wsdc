@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-12-16 11:15:13 by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="com.cqupt.domain.Goods" table="goods" catalog="bookfood" optimistic-lock="version">
+        <id name="goodsid" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="shop" class="com.cqupt.domain.Shop" lazy="false" fetch="select">
+            <column name="shopid" not-null="false" />
+        </many-to-one>
+        <many-to-one name="goodscateogry" class="com.cqupt.domain.Goodscategory" lazy="false" fetch="select">
+            <column name="goodscateid" />
+        </many-to-one>
+        <property name="goodsname" type="string">
+            <column name="goodsname" length="50" not-null="true" />
+        </property>
+        <property name="sales" type="int">
+            <column name="sales" not-null="true" />
+        </property>
+        <property name="price" type="double">
+            <column name="price" precision="22" scale="0" not-null="true" />
+        </property>
+        <property name="photo" type="string">
+            <column name="photo" not-null="false" />
+        </property>
+        <property name="introduc" type="string">
+            <column name="introduc" length="500" not-null="true" />
+        </property>
+        <property name="sort" type="int">
+            <column name="sort" not-null="false" />
+        </property>
+        <property name="state" type="int">
+            <column name="state" not-null="true">
+               
+            </column>
+        </property>
+        <property name="createtime" type="timestamp">
+            <column name="createtime" length="0" not-null="true" />
+        </property>
+        <set name="orderdetails" table="orderdetail" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="goodsid" />
+            </key>
+            <one-to-many class="com.cqupt.domain.Orderdetail" />
+        </set>
+        <set name="shoppingcarts" table="shoppingcart" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="goodsid" />
+            </key>
+            <one-to-many class="com.cqupt.domain.Shoppingcart" />
+        </set>
+        <set name="usercomments" table="usercomment" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="goodsid" not-null="true" />
+            </key>
+            <one-to-many class="com.cqupt.domain.Usercomment" />
+        </set>
+    </class>
+</hibernate-mapping>

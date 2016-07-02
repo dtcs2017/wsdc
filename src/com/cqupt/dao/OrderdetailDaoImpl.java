@@ -1,0 +1,58 @@
+package com.cqupt.dao;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.cqupt.common.BaseDao;
+import com.cqupt.common.PageBean;
+import com.cqupt.domain.Orderdetail;
+
+public class OrderdetailDaoImpl extends BaseDao<Orderdetail> implements OrderdetailDao {
+
+	@Override
+	public Orderdetail saveOrderdetail(Orderdetail orderdetail) {
+		// TODO Auto-generated method stub
+		return save(orderdetail);
+	}
+
+	@Override
+	public void delOrderdetail(Orderdetail orderdetail) {
+		// TODO Auto-generated method stub
+        delete(orderdetail);
+	}
+
+	@Override
+	public Orderdetail updateOrderdetail(Orderdetail orderdetail) {
+		// TODO Auto-generated method stub
+		return update(orderdetail);
+	}
+
+	@Override
+	public List<Orderdetail> queryOrderdetail(Orderdetail orderdetail) {
+		// TODO Auto-generated method stub
+		StringBuffer sb=new StringBuffer("FROM Orderdetail WHERE 1=1");
+		Map<String,Object> parms=new HashMap<String,Object>();
+		if(orderdetail!=null){
+			if(orderdetail.getOrder()!=null){
+				sb.append("AND order=:order");
+				parms.put("order", orderdetail.getOrder());
+			}
+		}
+		return findByNamedParam(sb.toString(),parms);
+	}
+
+	@Override
+	public PageBean queryOrderdetailByPage(Orderdetail orderdetail,
+			PageBean pageBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Orderdetail getOrderdetail(int id) {
+		// TODO Auto-generated method stub
+		return get(Orderdetail.class,id);
+	}
+
+}

@@ -1,0 +1,129 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- User Setter -->
+	<bean id="userDao" class="com.cqupt.dao.UserDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="userService" class="com.cqupt.service.UserServiceImpl">
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	<bean id="userAction" class="com.cqupt.action.UserAction"
+		scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="LoginAction" class="com.cqupt.action.LoginAction"
+		scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	
+	<!-- Address Setter -->
+	<bean id="addressDao" class="com.cqupt.dao.AddressDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="addressService" class="com.cqupt.service.AddressServiceImpl">
+		<property name="addressDao" ref="addressDao"></property>
+	</bean>
+	
+	<!-- Areacate Setter -->
+	<bean id="areacateDao" class="com.cqupt.dao.AreacateDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="areacateService" class="com.cqupt.service.AreacateServiceImpl">
+		<property name="areacateDao" ref="areacateDao"></property>
+	</bean>
+	
+	<!-- Usercomment Setter -->
+	<bean id="usercommentDao" class="com.cqupt.dao.UsercommentDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="usercommentService" class="com.cqupt.service.UsercommentServiceImpl">
+		<property name="usercommentDao" ref="usercommentDao"></property>
+	</bean>
+	
+	<!-- Shopreplay Setter -->
+	<bean id="shopreplayDao" class="com.cqupt.dao.ShopreplayDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="shopreplayService" class="com.cqupt.service.ShopreplayServiceImpl">
+		<property name="shopreplayDao" ref="shopreplayDao"></property>
+	</bean>
+	
+	<!-- Shoppingcart Setter -->
+	<bean id="shoppingCartDao" class="com.cqupt.dao.ShoppingCartDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="shoppingCartService" class="com.cqupt.service.ShoppingCartServiceImpl">
+		<property name="shoppingCartDao" ref="shoppingCartDao"></property>
+	</bean>
+	
+	<!-- Goodscategory Setter -->
+	<bean id="goodscategoryDao" class="com.cqupt.dao.GoodscategoryDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="goodscategoryService" class="com.cqupt.service.GoodscategoryServiceImpl">
+		<property name="goodscategoryDao" ref="goodscategoryDao"></property>
+	</bean>
+	
+	<!-- Goods Setter -->
+	<bean id="goodsDao" class="com.cqupt.dao.GoodsDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="goodsService" class="com.cqupt.service.GoodsServiceImpl">
+		<property name="goodsDao" ref="goodsDao"></property>
+	</bean>
+	
+	<!-- Order Setter -->
+	<bean id="orderDao" class="com.cqupt.dao.OrderDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="orderService" class="com.cqupt.service.OrderServiceImpl">
+		<property name="orderDao" ref="orderDao"></property>
+	</bean>
+	
+	<!-- Shopcategory　Setter -->
+	<bean id="shopcategoryDao" class="com.cqupt.dao.ShopcategoryDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="shopcategoryService" class="com.cqupt.service.ShopcategoryServiceImpl">
+		<property name="shopcategoryDao" ref="shopcategoryDao"></property>
+	</bean>
+	<bean id="shopcategoryAction" class="com.cqupt.action.UserAction"
+		scope="prototype">
+		<property name="shopcategoryService" ref="shopcategoryService"></property>
+	</bean>
+	
+	<!-- Shop Setter -->
+	<bean id="shopDao" class="com.cqupt.dao.ShopDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="shopService" class="com.cqupt.service.ShopServiceImpl">
+		<property name="shopDao" ref="shopDao"></property>
+	</bean>
+	<bean id="shopAction" class="com.cqupt.action.ShopAction"
+		scope="prototype">
+		<property name="shopService" ref="shopService"></property>
+	</bean>
+	
+	<!-- Orderdetail Setter -->
+	<bean id="orderdetailDao" class="com.cqupt.dao.OrderdetailDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="orderdetailService" class="com.cqupt.service.OrderdetailServiceImpl">
+		<property name="orderdetailDao" ref="orderdetailDao"></property>
+	</bean>
+	<bean id="orderdetailAction" class="com.cqupt.action.OrderdetailAction"
+		scope="prototype">
+		<property name="orderdetailService" ref="orderdetailService"></property>
+	</bean>
+	<!-- Admin Setter -->
+	<bean id="adminDao" class="com.cqupt.dao.AdminDaoImpl" parent="baseDao">
+	</bean>
+	<bean id="adminService" class="com.cqupt.service.AdminServiceImpl">
+		<property name="adminDao" ref="adminDao"></property>
+	</bean>
+	<bean id="AdminLoginAction" class="com.cqupt.action.AdminLoginAction"
+		scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+		<property name="shopService" ref="shopService"></property>
+	</bean>
+	<bean id="AdminAction" class="com.cqupt.action.AdminAction"
+		scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+		<property name="userService" ref="userService"></property>
+		<property name="shopcategoryService" ref="shopcategoryService"></property>
+		<property name="shopService" ref="shopService"></property>
+		<property name="goodscategoryService" ref="goodscategoryService"></property>
+		<property name="goodsService" ref="goodsService"></property>
+	</bean>
+</beans>

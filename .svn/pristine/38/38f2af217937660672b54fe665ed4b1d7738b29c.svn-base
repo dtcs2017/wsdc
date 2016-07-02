@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-12-16 11:15:13 by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="com.cqupt.domain.Shop" table="shop" catalog="bookfood" optimistic-lock="version">
+        <id name="shopid" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="shopcategory" class="com.cqupt.domain.Shopcategory" fetch="select">
+            <column name="shopcateid" />
+        </many-to-one>
+        <property name="shoploginname" type="string">
+            <column name="shoploginname" length="50" not-null="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="password" not-null="true" />
+        </property>
+        <property name="shopname" type="string">
+            <column name="shopname" length="100" not-null="true" />
+        </property>
+        <property name="shopaddress" type="string">
+            <column name="shopaddress" length="100" not-null="true" />
+        </property>
+        <property name="tel" type="string">
+            <column name="tel" length="20" not-null="true" />
+        </property>
+        <property name="sort" type="int">
+            <column name="sort" not-null="false" />
+        </property>
+        <property name="rank" type="int">
+            <column name="rank" not-null="false" />
+        </property>
+        <property name="introduc" type="string">
+            <column name="introduc" length="500" not-null="true" />
+        </property>
+        <property name="photo" type="string">
+            <column name="photo" not-null="false" />
+        </property>
+        <property name="state" type="int">
+            <column name="state" not-null="true">
+               
+            </column>
+        </property>
+        <property name="createtime" type="timestamp">
+            <column name="createtime" length="0" not-null="true" />
+        </property>
+        <property name="salenum" type="int">
+            <column name="salenum" />
+        </property>
+        <property name="sendprice" type="double">
+            <column name="sendprice" />
+        </property>
+        <property name="sendtime" type="string">
+            <column name="sendtime" />
+        </property>
+        <property name="runstate" type="int">
+            <column name="runstate" />
+        </property>
+        <set name="shopreplays" table="shopreplay" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="shopid" not-null="true" />
+            </key>
+            <one-to-many class="com.cqupt.domain.Shopreplay" />
+        </set>
+        <set name="goodses" table="goods" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="shopid" not-null="true" />
+            </key>
+            <one-to-many class="com.cqupt.domain.Goods" />
+        </set>
+    </class>
+</hibernate-mapping>

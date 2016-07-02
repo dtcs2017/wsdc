@@ -1,0 +1,169 @@
+/*
+ *@Project: framework 
+ *@Package: com.cqupt.action 
+ *@File: UserAction.java 
+ *@Date: 2015-12-11 
+ *@author: chenyongzheng
+ *@Copyright: V1.0 www.cqupt.edu.cn Inc. All rights reserved. 
+ *@Description: 本内容仅限于公司内部传阅，禁止外泄以及用于其他的商业目的 
+ */
+package com.cqupt.action;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
+
+import com.cqupt.common.BaseAction;
+import com.cqupt.common.GlobalConst;
+import com.cqupt.common.PageBean;
+import com.cqupt.domain.Goods;
+import com.cqupt.domain.Shoppingcart;
+import com.cqupt.domain.User;
+import com.cqupt.service.GoodsService;
+import com.cqupt.service.ShoppingCartService;
+import com.cqupt.service.UserService;
+import com.opensymphony.xwork2.ActionContext;
+
+
+/**
+ * 
+ * @Description: 购物车功能的实现
+ * @author lsx
+ * @since 2015-12-17
+ * @see com.cqupt.common.BaseAction
+ * 
+ */
+@Namespace("/shoppingCart")
+@Results({ @Result(name = "success", location = "/pages/user/Success.jsp"),
+		   @Result(name = "userList", location = "/pages/user/UserList.jsp"),
+		   @Result(name = "error", location = "/pages/user/Error.jsp"),
+		   @Result(name = "shoppingcartlist", location = "/pages/shoppingcart.jsp")
+         })
+public class ShoppingCartAction extends BaseAction {
+	
+
+	private static final long serialVersionUID = -7049401047878372932L;
+	
+	int goodsid;
+	
+	Double totalprice=0.0;
+	
+	Goods goods = new Goods();
+	
+	User user = new User();
+	
+	Shoppingcart shoppingCart = new Shoppingcart();
+	
+	ShoppingCartService shoppingCartService;
+	
+	UserService userService;
+	
+	GoodsService goodsService;
+	
+	List<Shoppingcart> shoppingcartlist;
+	/**
+	 * 系统日志输出类
+	 */
+	static Logger logger = LogManager.getLogger(ShoppingCartAction.class.getName());
+	
+	public int getGoodsid() {
+		return goodsid;
+	}
+	public void setGoodsid(int goodsid) {
+		this.goodsid = goodsid;
+	}
+	public Double getTotalprice() {
+		return totalprice;
+	}
+	public void setTotalprice(Double totalprice) {
+		this.totalprice = totalprice;
+	}
+	public Shoppingcart getShoppingCart() {
+		return shoppingCart;
+	}
+	public void setShoppingCart(Shoppingcart shoppingCart) {
+		this.shoppingCart = shoppingCart;
+	}
+	
+	public Goods getGoods() {
+		return goods;
+	}
+	public void setGoods(Goods goods) {
+		this.goods = goods;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public void setShoppingCartService(ShoppingCartService shoppingCartService) {
+		this.shoppingCartService = shoppingCartService;
+	}
+	
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+	public void setGoodsService(GoodsService goodsService) {
+		this.goodsService = goodsService;
+	}
+	
+	public List<Shoppingcart> getShoppingcartlist() {
+		return shoppingcartlist;
+	}
+	public void setShoppingcartlist(List<Shoppingcart> shoppingcartlist) {
+		this.shoppingcartlist = shoppingcartlist;
+	}
+	@Action("addToShoppingcart")
+	public void addToShoppingcart(){
+		int userid = (Integer) ActionContext.getContext().getSession().get("userid");
+		goods = goodsService.getGoods(goodsid);
+		user = userService.getUser(userid);
+		
+		Shoppingcart s = new Shoppingcart();
+		s.setUser(user);
+		s.setGoods(goods);
+		List<Shoppingcart> list = shoppingCartService.queryShoppingcart(s);
+		if(list.size()!=0){
+			Shoppingcart s2 = new Shoppingcart();
+			s2 = shoppingCartService.getShoppingCart(list.get(0).getShoppingcartid());
+			s2.setGoods(goods);
+			s2.setUser(user);
+			s2.setCreatetime(new Date());
+			s2.setGoodsnum(list.get(0).getGoodsnum()+1);
+			shoppingCartService.updateShoppingcart(s2);
+		} else{
+			shoppingCart.setGoods(goods);
+			shoppingCart.setUser(user);
+			shoppingCart.setCreatetime(new Date());
+			shoppingCart.setGoodsnum(1);
+			shoppingCartService.saveShoppingcart(shoppingCart);
+		}
+		
+	}
+	
+	@Action("shoppingcartlsit")
+	public String shoppingcartlist(){
+		shoppingcartlist = shoppingCartService.queryShoppingcart(shoppingCart);
+		double amount = 0.0;
+		for(Shoppingcart s : shoppingcartlist){
+			amount += s.getGoods().getPrice();
+		}
+		totalprice = amount;
+		return "shoppingcartlist";
+	}
+
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-12-16 11:15:13 by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="com.cqupt.domain.Order" table="order" catalog="bookfood" optimistic-lock="version">
+        <id name="orderid" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="address" class="com.cqupt.domain.Address" lazy="false" fetch="select">
+            <column name="addressid" />
+        </many-to-one>
+        <many-to-one name="user" class="com.cqupt.domain.User" lazy="false" fetch="select">
+            <column name="userid" not-null="true" />
+        </many-to-one>
+        <property name="orderno" type="string">
+            <column name="orderno" length="11" not-null="true" />
+        </property>
+        <property name="usertel" type="string">
+            <column name="usertel" length="20" not-null="true" />
+        </property>
+        <property name="createtime" type="timestamp">
+            <column name="createtime" length="0" not-null="true" />
+        </property>
+        <property name="ordertime" type="timestamp">
+            <column name="ordertime" length="0" not-null="true" />
+        </property>
+        <property name="state" type="int">
+            <column name="state" not-null="true">
+               
+            </column>
+        </property>
+        <property name="totalamount" type="double">
+            <column name="totalamount" precision="22" scale="0" not-null="true" />
+        </property>
+        <property name="amount" type="double">
+            <column name="amount" precision="22" scale="0" not-null="true" />
+        </property>
+        <set name="orderdetails" table="orderdetail" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="orderid" not-null="true" />
+            </key>
+            <one-to-many class="com.cqupt.domain.Orderdetail" />
+        </set>
+    </class>
+</hibernate-mapping>

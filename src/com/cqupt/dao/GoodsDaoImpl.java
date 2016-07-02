@@ -1,0 +1,102 @@
+package com.cqupt.dao;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.cqupt.common.BaseDao;
+import com.cqupt.common.PageBean;
+import com.cqupt.domain.Goods;
+
+public class GoodsDaoImpl extends BaseDao<Goods> implements GoodsDao{
+
+	@Override
+	public Goods saveGoods(Goods goods) {
+		//保存商品
+		return save(goods);
+	}
+
+	@Override
+	public void delGoods(int goodsId) {
+		//删除商品
+		delete(Goods.class, goodsId);
+	}
+
+
+	@Override
+	public Goods updateGoods(Goods goods) {
+		// 修改商品
+		return update(goods);
+	}
+	
+	public Goods getGoods(int id){
+		return get(Goods.class, id);
+	}
+
+
+	@Override
+	public List<Goods> queryGoods(Goods goods) {
+		// 查找商品列表
+		StringBuffer sb = new StringBuffer("FROM Goods WHERE 1=1 ");
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		if(goods != null){
+			if(goods.getGoodsid()!=null){
+				sb.append(" AND goodsid=:goodsid ");
+				params.put("goodsid", goods.getGoodsid());
+			}
+			if(goods.getGoodsname()!=null && goods.getGoodsname().trim().length()>0){
+				sb.append(" AND goodsname=:goodsname ");
+				params.put("goodsname", goods.getGoodsname());
+			}
+			if(goods.getGoodscateogry()!=null){
+				sb.append(" AND goodscateogry=:goodscateogry ");
+				params.put("goodscateogry", goods.getGoodscateogry());
+			} 
+			if(goods.getShop()!=null){
+				sb.append(" AND shop=:shop ");
+				params.put("shop", goods.getShop());
+			}
+			if(goods.getState()==1){
+				sb.append(" AND state=:state");
+				params.put("state",goods.getState());
+			}
+		}
+		List<Goods> list = findByNamedParam(sb.toString(), params);
+		return list;
+	}
+
+	@Override
+	public PageBean queryGoodsByPage(Goods goods, PageBean pageBean) {
+		StringBuffer sb = new StringBuffer("FROM Goods WHERE 1=1 ");
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		if(goods!=null){
+			if(goods.getGoodsid()!=null){
+				sb.append(" AND goodsid=:goodsid ");
+				params.put("goodsid", goods.getGoodsid());
+			}
+			if (goods.getGoodsname() != null && goods.getGoodsname().trim().length()>0) {
+				sb.append(" AND goodsname=:goodsname ");
+				params.put("goodsname", goods.getGoodsname());
+			}
+			if(goods.getGoodscateogry()!=null){
+				sb.append(" AND goodscateogry=:goodscateogry ");
+				params.put("goodscateogry", goods.getGoodscateogry());
+			}  
+			if(goods.getShop()!=null){
+				sb.append(" AND shop=:shop ");
+				params.put("shop", goods.getShop());
+			}
+			
+			if(goods.getState()==1){
+				sb.append(" AND state=:state");
+				params.put("state",goods.getState());
+			}
+		}
+		
+		return findPageByQuery(sb.toString(), params, pageBean);
+	}
+}
+
